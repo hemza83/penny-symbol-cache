@@ -1,8 +1,10 @@
 name: Fetch US symbol list
 
 on:
+  push:
+    branches: [ main ]
   schedule:
-    - cron: '0 22 * * 1-5'     # every weekday at 22:00 UTC
+    - cron: '0 22 * * 1-5'    # every weekday at 22:00 UTC
 
 jobs:
   update:
@@ -11,10 +13,12 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Download NASDAQ list
-        run: curl -sL https://ftp.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt -o nasdaqlisted.txt
+        run: |
+          curl -sL https://ftp.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt -o nasdaqlisted.txt
 
       - name: Download NYSE/AMEX list
-        run: curl -sL https://ftp.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt  -o otherlisted.txt
+        run: |
+          curl -sL https://ftp.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt -o otherlisted.txt
 
       - name: Commit updated symbol files
         run: |
