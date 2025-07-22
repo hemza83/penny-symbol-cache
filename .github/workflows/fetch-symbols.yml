@@ -1,0 +1,25 @@
+name: Fetch US symbol list
+
+on:
+  schedule:
+    - cron: '0 22 * * 1-5'     # every weekday at 22:00 UTC
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download NASDAQ list
+        run: curl -sL https://ftp.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt -o nasdaqlisted.txt
+
+      - name: Download NYSE/AMEX list
+        run: curl -sL https://ftp.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt  -o otherlisted.txt
+
+      - name: Commit updated symbol files
+        run: |
+          git config user.name  symbol-bot
+          git config user.email symbol-bot@users.noreply.github.com
+          git add nasdaqlisted.txt otherlisted.txt
+          git commit -m "auto-update symbols $(date -u +%F)" || echo "no change"
+          git push
