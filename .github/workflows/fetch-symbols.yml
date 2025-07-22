@@ -1,5 +1,8 @@
 name: Fetch US symbol list
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: [ main ]
@@ -11,14 +14,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download NASDAQ list
+      - name: Download NASDAQ list via FTP
         run: |
-          curl -sL https://ftp.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt -o nasdaqlisted.txt
+          curl -sL ftp://ftp.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt \
+            -o nasdaqlisted.txt
 
-      - name: Download NYSE/AMEX list
+      - name: Download NYSE/AMEX list via FTP
         run: |
-          curl -sL https://ftp.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt -o otherlisted.txt
+          curl -sL ftp://ftp.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt \
+            -o otherlisted.txt
 
       - name: Commit updated symbol files
         run: |
